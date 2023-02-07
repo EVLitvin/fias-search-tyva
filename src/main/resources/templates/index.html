@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<fieldset>
+    <legend>Поиск в базе данных ФИАС</legend>
+    <form th:action="@{/search}" method="get">
+        <label for="search">
+            <input type="text" id="search" name="name" th:value="${name}" placeholder="Поиск по названию улицы"
+                   size="50">
+        </label>
+        <button type="submit" class="search_btn">Найти</button>
+        <button type="reset" class="reset_btn">Очистить</button>
+    </form>
+</fieldset>
+<div class="search_result" th:each="list : ${addressList}" th:field="${list}">
+    <span th:text="${list.typeName}"></span>
+    <span th:text="${list.name}"></span>
+    <span th:text="${list.objectID}"></span>
+    <span th:text="${list.objectGUID}"></span>
+</div>
+</body>
+</html>
