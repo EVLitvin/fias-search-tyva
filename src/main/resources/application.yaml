@@ -1,0 +1,26 @@
+server:
+  port: 7070
+
+logging:
+  file:
+    name: main.log
+  level:
+    sql: debug
+    web: debug
+
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fias_search_tyva_houses
+    username: postgres
+    password: password
+    driverClassName: org.postgresql.Driver
+    generate-unique-name: false
+    name: fias_search_tyva_houses
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
