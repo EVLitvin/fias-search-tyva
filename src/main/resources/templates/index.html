@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en, ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Поиск в базе данных ФИАС</title>
 </head>
 <body>
 <fieldset>
     <legend>Поиск в базе данных ФИАС</legend>
     <form th:action="@{/search}" method="get">
         <label for="search">
-            <input type="text" id="search" name="name" th:value="${name}" placeholder="Введите адрес"
+            <input type="text" id="search" name="description" th:value="${description}" placeholder="Введите адрес"
                    size="50">
         </label>
         <button type="submit" class="search_btn">Найти</button>
