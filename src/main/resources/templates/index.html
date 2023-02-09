@@ -16,10 +16,7 @@
     </form>
 </fieldset>
 <div class="search_result" th:each="list : ${addressList}" th:field="${list}">
-    <span th:text="${list.typeName}"></span>
-    <span th:text="${list.name}"></span>
-    <span th:text="${list.objectID}"></span>
-    <span th:text="${list.objectGUID}"></span>
+    <span th:text="${list.typeName} + ' ' + ${list.name} + ' ' + ${list.objectID} + ' ' + ${list.objectGUID}"></span>
 </div>
 </body>
 </html>
