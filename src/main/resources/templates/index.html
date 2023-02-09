@@ -9,11 +9,10 @@
     <legend>Поиск в базе данных ФИАС</legend>
     <form th:action="@{/search}" method="get">
         <label for="search">
-            <input type="text" id="search" name="name" th:value="${name}" placeholder="Поиск по названию улицы"
+            <input type="text" id="search" name="name" th:value="${name}" placeholder="Введите адрес"
                    size="50">
         </label>
         <button type="submit" class="search_btn">Найти</button>
-        <button type="reset" class="reset_btn">Очистить</button>
     </form>
 </fieldset>
 <div class="search_result" th:each="list : ${addressList}" th:field="${list}">

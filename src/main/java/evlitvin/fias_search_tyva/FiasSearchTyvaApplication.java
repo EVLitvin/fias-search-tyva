@@ -1,4 +1,4 @@
-package com.example.fias_search_tyva;
+package evlitvin.fias_search_tyva;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

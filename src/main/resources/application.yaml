@@ -13,12 +13,12 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/fias_search_tyva_houses
+    url: jdbc:postgresql://localhost:5432/fias_tyva
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver
     generate-unique-name: false
-    name: fias_search_tyva_houses
+    name: fias_tyva
   jpa:
     show-sql: true
     properties:

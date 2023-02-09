@@ -1,4 +1,4 @@
-package com.example.fias_search_tyva;
+package evlitvin.fias_search_tyva;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

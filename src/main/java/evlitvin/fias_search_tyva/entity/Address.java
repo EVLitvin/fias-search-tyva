@@ -1,4 +1,4 @@
-package com.example.fias_search_tyva;
+package evlitvin.fias_search_tyva.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +13,5 @@ public class Address {
     private String name;
     private long objectID;
     private String objectGUID;
+
 }

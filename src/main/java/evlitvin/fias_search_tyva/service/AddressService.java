@@ -1,21 +1,22 @@
-package com.example.fias_search_tyva.data;
+package evlitvin.fias_search_tyva.service;
 
-import com.example.fias_search_tyva.Address;
+import evlitvin.fias_search_tyva.dao.AddressDao;
+import evlitvin.fias_search_tyva.entity.Address;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Repository
-public class JdbcAddressRepository implements AddressRepository {
+@Service
+public class AddressService implements AddressDao {
 
-    private String sqlFindByDescription = "select typename, name, objectid, objectguid from as_addr_obj where name ilike ? and isactive = 1 and isactual = 1";
+    private String sqlFindByDescription = "select tyva_schema.as_addr_obj.typename, tyva_schema.as_addr_obj.name, tyva_schema.as_addr_obj.objectid, tyva_schema.as_addr_obj.objectguid from tyva_schema.as_addr_obj where tyva_schema.as_addr_obj.name ilike ?";
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcAddressRepository(JdbcTemplate jdbcTemplate) {
+    public AddressService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
