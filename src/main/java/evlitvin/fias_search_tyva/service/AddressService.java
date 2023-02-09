@@ -12,20 +12,25 @@ import java.util.List;
 @Service
 public class AddressService implements AddressDao {
 
-    private String sqlFindByDescription = "select tyva_schema.as_addr_obj.typename, tyva_schema.as_addr_obj.name, tyva_schema.as_addr_obj.objectid, tyva_schema.as_addr_obj.objectguid from tyva_schema.as_addr_obj where tyva_schema.as_addr_obj.name ilike ?";
-
     private final JdbcTemplate jdbcTemplate;
 
     public AddressService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+        private String sqlFindByDescription = "select tyva_schema.as_addr_obj.typename,\n" +
+            "       tyva_schema.as_addr_obj.name\n" +
+            "from tyva_schema.as_addr_obj\n" +
+            "where tyva_schema.as_addr_obj.name ilike ? \n" +
+            "  and tyva_schema.as_addr_obj.opertypeid = 1\n" +
+            "  and tyva_schema.as_addr_obj.isactive = 1;";
+
     @Override
-    public List<Address> findAddressByDescription(String description) {
+    public List<Address> findAddressByDescription(String addressDescription) {
         List<Address> searchResult = jdbcTemplate.query(
                 sqlFindByDescription,
                 this::mapRowToAddress,
-                description
+                addressDescription
         );
         return searchResult;
     }
@@ -34,8 +39,8 @@ public class AddressService implements AddressDao {
             throws SQLException {
         return new Address(
                 row.getString("typeName"),
-                row.getString("name"),
-                row.getLong("objectID"),
-                row.getString("objectGUID"));
+                row.getString("name"));
+//                row.getLong("objectID"),
+//                row.getString("objectGUID"));
     }
 }

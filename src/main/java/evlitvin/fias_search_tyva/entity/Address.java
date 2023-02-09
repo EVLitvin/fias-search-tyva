@@ -11,7 +11,7 @@ public class Address {
 
     private String typeName;
     private String name;
-    private long objectID;
-    private String objectGUID;
+//    private long objectID;
+//    private String objectGUID;
 
 }

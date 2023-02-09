@@ -23,16 +23,16 @@ public class IndexController {
     }
 
     @GetMapping(path = "/search")
-    public String showIndexPageWithSearchResult(String description, Model model) {
-        List<Address> addressList = jdbcAddressRepository.findAddressByDescription(description);
+    public String showIndexPageWithSearchResult(String addressDescription, Model model) {
+        List<Address> addressList = jdbcAddressRepository.findAddressByDescription(addressDescription);
         model.addAttribute("addressList", addressList);
         return "index";
     }
 
-    @GetMapping(path = "/api/search/{description}", produces = {"application/json", "text/xnl"})
+    @GetMapping(path = "/api/search/{addressDescription}", produces = {"application/json", "text/xnl"})
     @ResponseBody
-    public List<Address> findAddressByDescription(@PathVariable("description") String description) {
-        return jdbcAddressRepository.findAddressByDescription(description);
+    public List<Address> findAddressByDescription(@PathVariable("addressDescription") String addressDescription) {
+        return jdbcAddressRepository.findAddressByDescription(addressDescription);
     }
 
 }

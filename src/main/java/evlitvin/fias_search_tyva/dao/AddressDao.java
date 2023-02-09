@@ -7,6 +7,6 @@ import java.util.List;
 
 @Repository
 public interface AddressDao {
-    List<Address> findAddressByDescription(String description);
+    List<Address> findAddressByDescription(String addressDescription);
 
 }
