@@ -1,3 +1,86 @@
+WITH RECURSIVE child_to_parents AS (
+    SELECT aah.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah
+    WHERE aah.objectid IN (
+        SELECT aao.objectid
+        FROM tyva_schema.as_addr_obj aao
+        WHERE aao.name ilike ?
+            AND aao.isactive = 1
+            AND aao.isactual = 1
+)
+    UNION ALL
+    SELECT aah2.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah2, child_to_parents cto
+    WHERE aah2.objectid = cto.parentobjid
+      AND aah2.isactive = 1
+)
+SELECT *
+FROM child_to_parent
+
+-- поиск всех предков до улицы по objectid
+WITH RECURSIVE child_to_parents AS (
+    SELECT aah.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah
+    WHERE aah.objectid = (
+        SELECT aao.objectid
+        FROM tyva_schema.as_addr_obj aao
+        WHERE aao.objectid =  208229
+        AND aao.isactive = 1
+        AND aao.isactual = 1
+        )
+    UNION ALL
+    SELECT aah2.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah2, child_to_parents cto
+    WHERE aah2.objectid = cto.parentobjid
+      AND aah2.isactive = 1
+)
+SELECT *
+FROM child_to_parents;
+
+-- поиск всех предков до дома по objectid
+WITH RECURSIVE child_to_parents AS (
+    SELECT aah.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah
+    WHERE aah.objectid IN (
+        SELECT ah.objectid
+        FROM tyva_schema.as_houses ah
+        WHERE ah.objectid = 1558608
+          AND ah.isactual = 1
+          AND ah.isactive = 1
+        )
+    UNION ALL
+    SELECT aah2.*
+    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah2, child_to_parents cto
+    WHERE aah2.objectid = cto.parentobjid
+      AND aah2.isactive = 1
+)
+SELECT *
+FROM child_to_parents;
+
+
+-- выбор дома
+SELECT ah.housenum,
+       aht.description
+FROM tyva_schema.as_houses ah
+         INNER JOIN tyva_schema.as_house_types aht ON ah.housetype = aht.id
+WHERE ah.housenum ilike ?
+  AND ah.isactual = 1
+  AND ah.isactive = 1;
+
+-- выбор улицы
+SELECT aao.typename, aao.name, aao.objectid, aao.level, aao.isactive, aao.isactual
+FROM tyva_schema.as_addr_obj aao
+WHERE aao.name ilike ?
+AND aao.isactual = 1
+AND aao.isactive = 1;
+
+
+
+
+
+
+
+-- через UNION --
 SELECT tyva_schema.as_addr_obj.typename,
        tyva_schema.as_addr_obj.name -- Название улицы SELECT * FROM tyva_schema.as_object_levels where as_object_levels.level = 8
 FROM tyva_schema.as_addr_obj
