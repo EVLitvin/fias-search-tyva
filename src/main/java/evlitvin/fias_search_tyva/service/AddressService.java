@@ -1,6 +1,7 @@
 package evlitvin.fias_search_tyva.service;
 
 import evlitvin.fias_search_tyva.dao.AddressDao;
+import evlitvin.fias_search_tyva.dao.AddressMapper;
 import evlitvin.fias_search_tyva.entity.Address;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -14,33 +15,17 @@ public class AddressService implements AddressDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public AddressService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final AddressMapper addressMapper;
 
-        private String sqlFindByDescription = "select tyva_schema.as_addr_obj.typename,\n" +
-            "       tyva_schema.as_addr_obj.name\n" +
-            "from tyva_schema.as_addr_obj\n" +
-            "where tyva_schema.as_addr_obj.name ilike ? \n" +
-            "  and tyva_schema.as_addr_obj.opertypeid = 1\n" +
-            "  and tyva_schema.as_addr_obj.isactive = 1;";
+    public AddressService(JdbcTemplate jdbcTemplate, AddressMapper addressMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.addressMapper = addressMapper;
+    }
 
     @Override
     public List<Address> findAddressByDescription(String addressDescription) {
-        List<Address> searchResult = jdbcTemplate.query(
-                sqlFindByDescription,
-                this::mapRowToAddress,
-                addressDescription
-        );
-        return searchResult;
+        List<Address> addressList = jdbcTemplate.query(sqlFindByDescription, addressMapper, addressDescription);
+        return addressList;
     }
 
-    private Address mapRowToAddress(ResultSet row, int rowNum)
-            throws SQLException {
-        return new Address(
-                row.getString("typeName"),
-                row.getString("name"));
-//                row.getLong("objectID"),
-//                row.getString("objectGUID"));
-    }
 }

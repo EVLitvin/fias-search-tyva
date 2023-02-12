@@ -1,3 +1,89 @@
+-- как объеденить full tekst search и pg_trgm  -- jquery on_focus on_click для выпадающего списка -- ts_rank для поиска -- ts_headlne
+SELECT aao.typename, aao.name
+FROM tyva_schema.as_addr_obj aao
+WHERE aao.name ILIKE '%' || ? || '%';
+
+SELECT aao.typename, aao.name FROM tyva_schema.as_addr_obj aao WHERE aao.name ILIKE '%' || ? || '%' AND aao.typename ILIKE '%' || ? || '%';
+
+SELECT aao.typename, aao.name
+    FROM tyva_schema.as_addr_obj aao
+--     INNER JOIN tyva_schema.as_reestr_objects aro ON aao.objectid = aro.objectid
+WHERE aao.name @@ websearch_to_tsquery(?);
+
+SELECT aao.typename, aao.name FROM tyva_schema.as_addr_obj aao WHERE aao.name ILIKE '%' || ? || '%';
+
+SELECT aao.typename,
+       aao.name,
+       aao.objectid,
+       aao.isactual,
+       aao.isactive,
+       aro.isactive,
+       aah.isactive
+FROM tyva_schema.as_addr_obj aao
+         INNER JOIN tyva_schema.as_reestr_objects aro ON aao.objectid = aro.objectid
+         INNER JOIN tyva_schema.as_adm_hierarchy aah ON aro.objectid = aah.objectid
+WHERE aao.name @@ to_tsquery(?)
+  AND aao.isactual = 1
+  AND aao.isactive = 1
+  AND aro.isactive = 1
+  AND aah.isactive = 1
+ORDER BY aao.name DESC;
+
+"SELECT aao.typename, aao.name FROM tyva_schema.as_addr_obj aao\n" +
+            "WHERE aao.name @@ websearch_to_tsquery(?) AND aao.isactive = 1 AND aao.isactual = 1;";
+
+
+SELECT aao.typename, aao.name\n" +
+                "FROM tyva_schema.as_addr_obj aao\n" +
+                "WHERE aao.objectid IN (\n" +
+                "WITH RECURSIVE child_to_parents AS (\n" +
+                "    SELECT aah.objectid, aah.parentobjid, aah.path\n" +
+                "    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah\n" +
+                "    WHERE aah.objectid IN (\n" +
+                "        SELECT aao.objectid\n" +
+                "        FROM tyva_schema.as_addr_obj aao\n" +
+                "        WHERE aao.name ilike ?\n" +
+                "            AND aao.isactive = 1\n" +
+                "            AND aao.isactual = 1\n" +
+                ")\n" +
+                "    UNION ALL\n" +
+                "    SELECT aah2.objectid, aah2.parentobjid, aah2.path\n" +
+                "    FROM fias_tyva.tyva_schema.as_adm_hierarchy aah2, child_to_parents cto\n" +
+                "    WHERE aah2.objectid = cto.parentobjid\n" +
+                "      AND aah2.isactive = 1\n" +
+                ")\n" +
+                "SELECT ctp.objectid\n" +
+                "FROM child_to_parents ctp);
+
+
+
+SELECT format('%s %s %s', aao.typename, aao.name, aao.objectid)
+FROM tyva_schema.as_addr_obj aao
+WHERE aao.objectid IN (
+WITH RECURSIVE child_to_parents AS (
+    SELECT aah.objectid, aah.parentobjid, aah.path
+    FROM tyva_schema.as_adm_hierarchy aah
+    WHERE aah.objectid IN (
+        SELECT aao.objectid
+        FROM tyva_schema.as_addr_obj aao
+        WHERE aao.name ilike ?
+            AND aao.isactive = 1
+            AND aao.isactual = 1
+)
+    UNION ALL
+    SELECT aah2.objectid, aah2.parentobjid, aah2.path
+    FROM tyva_schema.as_adm_hierarchy aah2, child_to_parents cto
+    WHERE aah2.objectid = cto.parentobjid
+      AND aah2.isactive = 1
+)
+SELECT ctp.objectid
+FROM child_to_parents ctp);
+
+
+
+
+
+
 WITH RECURSIVE child_to_parents AS (
     SELECT aah.*
     FROM fias_tyva.tyva_schema.as_adm_hierarchy aah
