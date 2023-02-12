@@ -24,8 +24,7 @@ public class AddressService implements AddressDao {
 
     @Override
     public List<Address> findAddressByDescription(String addressDescription) {
-        List<Address> addressList = jdbcTemplate.query(sqlFindByDescription, addressMapper, addressDescription);
-        return addressList;
+        return jdbcTemplate.query(sqlFindByDescription, addressMapper, addressDescription);
     }
 
 }
