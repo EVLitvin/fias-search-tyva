@@ -11,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class Address {
 
+    private Long objectId;
+    private Long parentObjId;
     private String streetType;
     private String streetName;
     private Byte streetActualStatus;
     private Byte streetActiveStatus;
-
+    private String pathToAddress;
 }
