@@ -6,8 +6,6 @@ import evlitvin.fias_search_tyva.entity.Address;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
