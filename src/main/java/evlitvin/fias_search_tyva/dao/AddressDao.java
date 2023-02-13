@@ -8,11 +8,18 @@ import java.util.List;
 @Repository
 public interface AddressDao {
 
-    String sqlFindByDescription = "SELECT aao.typename AS streetType, aao.name AS streetName, aao.isactual AS streetActualStatus, aao.isactive AS streetActiveStatus\n" +
-            "FROM tyva_schema.as_addr_obj aao\n" +
-            "WHERE aao.name ILIKE '%' || ? || '%'\n" +
-            "  AND aao.isactive = 1;";
+    String sqlQueryUsePgTrgm = "SELECT aao.typename AS streetType, aao.name AS streetName, aao.isactual AS streetActualStatus, aao.isactive AS streetActiveStatus\n" +
+                               "FROM tyva_schema.as_addr_obj aao\n" +
+                               "WHERE aao.name ILIKE '%' || ? || '%'\n" +
+                               "AND aao.isactive = 1;";
 
-    List<Address> findAddressByDescription(String sqlFindByDescription);
+    List<Address> findAddressBySqlQueryUsePgTrgm(String addressDescription);
+
+    String sqlQueryUseWebsearchToTsquery = "SELECT aao.typename AS streetType, aao.name AS streetName, aao.isactual AS streetActualStatus, aao.isactive AS streetActiveStatus\n" +
+                                           "FROM tyva_schema.as_addr_obj aao\n" +
+                                           "WHERE aao.name @@ websearch_to_tsquery(?)\n" +
+                                           "AND aao.isactive = 1;";
+
+    List<Address> findAddressBySqlQueryUseWebsearchToTsquery(String addressDescription);
 
 }

@@ -23,8 +23,13 @@ public class AddressService implements AddressDao {
     }
 
     @Override
-    public List<Address> findAddressByDescription(String addressDescription) {
-        return jdbcTemplate.query(sqlFindByDescription, addressMapper, addressDescription);
+    public List<Address> findAddressBySqlQueryUsePgTrgm(String addressDescription) {
+        return jdbcTemplate.query(sqlQueryUsePgTrgm, addressMapper, addressDescription);
+    }
+
+    @Override
+    public List<Address> findAddressBySqlQueryUseWebsearchToTsquery(String addressDescription) {
+        return jdbcTemplate.query(sqlQueryUseWebsearchToTsquery, addressMapper, addressDescription);
     }
 
 }

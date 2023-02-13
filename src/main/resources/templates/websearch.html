@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>(websearch) Поиск в базе данных ФИАС</title>
+</head>
+<body>
+<div class="websearch-to-tsquery">
+    <fieldset>
+        <legend>Поиск в базе данных ФИАС (websearch)</legend>
+        <form th:action="@{/websearch/websearch-to-tsquery}" method="get">
+            <label for="websearch-to-tsquery">
+                <input type="text" id="websearch-to-tsquery" name="websearchToTsqueryAddressDescription"
+                       th:value="${addressDescription}"
+                       placeholder="Введите адрес" size="50">
+            </label>
+            <button type="submit" class="search-btn">Найти</button>
+        </form>
+    </fieldset>
+    <div class="search_result" th:each="address : ${websearchToTsqueryTrgmAddressList}">
+        <span th:text="${address.streetType} + '. ' + ${address.streetName}"></span>
+    </div>
+</div>
+</body>
+</html>

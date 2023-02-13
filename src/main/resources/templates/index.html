@@ -5,18 +5,20 @@
     <title>Поиск в базе данных ФИАС</title>
 </head>
 <body>
-<fieldset>
-    <legend>Поиск в базе данных ФИАС</legend>
-    <form th:action="@{/search}" method="get">
-        <label for="search">
-            <input type="text" id="search" name="addressDescription" th:value="${addressDescription}"
-                   placeholder="Введите адрес" size="50">
-        </label>
-        <button type="submit" class="search_btn">Найти</button>
-    </form>
-</fieldset>
-<div class="search_result" th:each="list : ${addressList}">
-    <span th:text="${list.streetType} + '. ' + ${list.streetName}"></span>
+<div class="pg-trgm">
+    <fieldset>
+        <legend>Поиск в базе данных</legend>
+        <form th:action="@{/search/pg-trgm}" method="get">
+            <label for="pg-trgm-search">
+                <input type="text" id="pg-trgm-search" name="pgTrgmAddressDescription"
+                       th:value="${addressDescription}" placeholder="Введите адрес" size="50">
+            </label>
+            <button type="submit" class="search-btn">Найти</button>
+        </form>
+    </fieldset>
+    <div class="search_result" th:each="address : ${pgTrgmAddressList}">
+        <span th:text="${address.streetType} + '. ' + ${address.streetName}"></span>
+    </div>
 </div>
 </body>
 </html>
