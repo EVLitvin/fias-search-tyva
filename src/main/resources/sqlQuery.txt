@@ -59,20 +59,13 @@ order by aao.level;
 -- решение через рекурсию
 
 WITH RECURSIVE child_to_parents AS (
-    SELECT aah.objectid, aah.parentobjid, aah.isactive, aah.path, aao2.typename, aao2.name
-    FROM tyva_schema.as_adm_hierarchy aah
-        FULL JOIN tyva_schema.as_addr_obj aao2 ON aao2.objectid = aah.objectid
-    WHERE aah.isactive = 1
-        AND aah.objectid IN (
-            SELECT DISTINCT aao.objectid
-                FROM tyva_schema.as_addr_obj aao
-                    WHERE aao.name ILIKE '%' || ? || '%'
-                        AND aao.isactive = 1
-                        AND aao.isactual = 1
-    )
-    UNION ALL
-    SELECT DISTINCT aah2.objectid, aah2.parentobjid, aah2.isactive, aah2.path, aao3.typename, aao3.name
-    FROM tyva_schema.as_adm_hierarchy aah2, tyva_schema.as_addr_obj aao3, child_to_parents
-    WHERE aah2.objectid = child_to_parents.parentobjid
-        AND aah2.streetcode != 0
-)
+    SELECT DISTINCT amh.*
+        FROM tyva_schema.as_mun_hierarchy AS amh
+        INNER JOIN tyva_schema.as_addr_obj aao ON aao.objectid = amh.objectid
+                WHERE aao.name ILIKE '%' || ? || '%'
+                  AND amh.isactive = 1
+        UNION ALL
+        SELECT amh.*
+            FROM tyva_schema.as_mun_hierarchy AS amh, child_to_parents AS c
+                WHERE amh.objectid = c.parentobjid
+) SELECT * FROM child_to_parents ORDER BY path DESC;
