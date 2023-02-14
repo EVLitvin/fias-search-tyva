@@ -12,13 +12,15 @@ public class AddressMapper implements RowMapper<Address> {
     @Override
     public Address mapRow(ResultSet rs, int rowNum) throws SQLException {
         Address address = new Address();
-//        address.setObjectId(rs.getLong("objectId"));
-//        address.setParentObjId(rs.getLong("parentObjId"));
-        address.setStreetType(rs.getString("streetType"));
-        address.setStreetName(rs.getString("streetName"));
-        address.setStreetActiveStatus(rs.getByte("streetActiveStatus"));
-        address.setStreetActualStatus(rs.getByte("streetActualStatus"));
-//        address.setPathToAddress(rs.getString("pathToAddress"));
+        address.setObjectType(rs.getString("objectType"));
+        address.setObjectName(rs.getString("objectName"));
+        address.setObjectId(rs.getLong("objectId"));
+        address.setObjectGUID(rs.getString("objectGUID"));
+        address.setObjectParent(rs.getLong("objectParent"));
+        address.setObjectActiveStatus(rs.getByte("objectActiveStatus"));
+        address.setObjectActualStatus(rs.getByte("objectActualStatus"));
+        address.setObjectLevel(rs.getByte("objectLevel"));
+        address.setPathToObject(rs.getString("pathToObject"));
         return address;
     }
 }

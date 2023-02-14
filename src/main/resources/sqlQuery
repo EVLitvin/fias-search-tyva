@@ -1,4 +1,62 @@
--- как объеденить full tekst search и pg_trgm  -- jquery on_focus on_click для выпадающего списка -- ts_rank для поиска -- ts_headlne
+-- можно ли совместить pg_trgm и to_tsquery(?) или websearch_to_tsquery(?) или plainto_tsquery(?) или phraseto_tsquery(?)
+-- как добавить дом
+-- как добавить objectType и objectName для каждого кто в path иерархии
+-- как сделать динамичский выпадающий список при наборе
+
+-- поиск aao.name ILIKE '%' || ? || '%'
+SELECT aao.typename    AS objectType,
+       aao.name        AS objectName,
+       aao.objectid    AS objectID,
+       aao.objectguid  AS objectGUID,
+       amh.parentobjid AS objectParent,
+       aao.isactive    AS objectActiveStatus,
+       aao.isactual    AS objectActualStatus,
+       aao.level       AS objectLevel,
+       amh.path        AS pathToObject
+FROM tyva_schema.as_addr_obj aao
+         FULL JOIN tyva_schema.as_mun_hierarchy amh ON aao.objectid = amh.objectid
+WHERE aao.name ILIKE '%' || ? || '%'
+  AND (aao.isactive = 1 AND aao.isactual = 1)
+ORDER BY aao.level;
+
+
+-- поиск aao.name @@ websearch_to_tsquery(?)
+SELECT aao.typename    AS objectType,
+       aao.name        AS objectName,
+       aao.objectid    AS objectID,
+       aao.objectguid  AS objectGUID,
+       amh.parentobjid AS objectParent,
+       aao.isactive    AS objectActiveStatus,
+       aao.isactual    AS objectActualStatus,
+       aao.level       AS objectLevel,
+       amh.path        AS pathToObject
+FROM tyva_schema.as_addr_obj aao
+         FULL JOIN tyva_schema.as_mun_hierarchy amh ON aao.objectid = amh.objectid
+WHERE aao.name @@ websearch_to_tsquery(?)
+  AND (aao.isactive = 1 AND aao.isactual = 1)
+ORDER BY aao.level;
+
+
+select aao.typename    AS objectType,
+       aao.name        AS objectName,
+       aao.objectid    AS objectID,
+       aao.objectguid  AS objectGUID,
+       amh.parentobjid AS objectParent,
+       aao.isactive    AS objectActiveStatus,
+       aao.isactual    AS objectActualStatus,
+       aao.level       AS objectLevel,
+       amh.path        AS pathToObject
+from tyva_schema.as_addr_obj aao
+         inner join tyva_schema.as_mun_hierarchy amh on aao.objectid = amh.objectid
+where aao.objectid = 206101
+   or (aao.objectid = 95235322 and aao.isactual = 1 and aao.isactive = 1)
+   or (aao.objectid = 95235329 and aao.isactual = 1 and aao.isactive = 1)
+   or aao.objectid = 209801
+   or aao.objectid = 210093
+order by aao.level;
+
+
+-- решение через рекурсию
 
 WITH RECURSIVE child_to_parents AS (
     SELECT aah.objectid, aah.parentobjid, aah.isactive, aah.path, aao2.typename, aao2.name

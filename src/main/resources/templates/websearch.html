@@ -18,7 +18,7 @@
         </form>
     </fieldset>
     <div class="search_result" th:each="address : ${websearchToTsqueryTrgmAddressList}">
-        <span th:text="${address.streetType} + '. ' + ${address.streetName}"></span>
+        <span th:text="${address.objectType} + '. ' + ${address.objectName}"></span>
     </div>
 </div>
 </body>
