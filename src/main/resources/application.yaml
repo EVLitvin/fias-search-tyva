@@ -13,7 +13,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/fias_tyva
+    url: jdbc:postgresql://localhost:5432/fias-tyva
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver

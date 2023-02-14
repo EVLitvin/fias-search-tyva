@@ -90,6 +90,26 @@ CREATE TABLE IF NOT EXISTS tyva_schema.as_addr_obj
     ISACTIVE   SMALLINT     NOT NULL                                                                        -- Признак действующего адресного объекта, принимает значение: 0 – недействующий адресный объект | 1 – действующий
 );
 
+CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_name_typename_idx
+    ON tyva_schema.as_addr_obj USING gin (setweight(to_tsvector('russian', tyva_schema.as_addr_obj.name), 'A'),
+                                          setweight(to_tsvector('russian', tyva_schema.as_addr_obj.typename), 'B'));
+
+CREATE TABLE IF NOT EXISTS tyva_schema.as_mun_hierarchy
+-- Состав и структура файла со сведениями по иерархии в муниципальном делении. Сведения по иерархии в муниципальном делении.
+(
+    ID          BIGINT       NOT NULL PRIMARY KEY,                                                           -- Уникальный идентификатор записи. Ключевое поле.
+    OBJECTID    BIGINT       NOT NULL REFERENCES tyva_schema.as_reestr_objects (OBJECTID) ON DELETE CASCADE, -- Глобальный уникальный идентификатор адресного объекта.
+    PARENTOBJID BIGINT,                                                                                      -- Идентификатор родительского объекта.
+    CHANGEID    BIGINT       NOT NULL,                                                                       -- ID изменившей транзакции.
+    OKTMO       VARCHAR(11),                                                                                 -- Код ОКТМО.
+    PREVID      BIGINT,                                                                                      -- Идентификатор записи связывания с предыдущей исторической записью.
+    NEXTID      BIGINT,                                                                                      -- Идентификатор записи связывания с последующей исторической записью.
+    UPDATEDATE  DATE         NOT NULL,                                                                       -- Дата внесения (обновления) записи.
+    STARTDATE   DATE         NOT NULL,                                                                       -- Начало действия записи.
+    ENDDATE     DATE         NOT NULL,                                                                       -- Окончание действия записи.
+    ISACTIVE    SMALLINT     NOT NULL,                                                                       -- Признак действующего адресного объекта.
+    PATH        VARCHAR(250) NOT NULL                                                                        -- Материализованный путь к объекту (полная иерархия).
+);
 CREATE TABLE IF NOT EXISTS tyva_schema.as_adm_hierarchy
 -- Состав и структура файла со сведениями по иерархии в административном делении. Сведения по иерархии в административном делении.
 (
@@ -153,16 +173,3 @@ CREATE TABLE IF NOT EXISTS tyva_schema.as_houses
     ADDTYPE2   INTEGER                                                                                     -- Дополнительный тип дома 2
 );
 
-CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_name_and_typename_idx
-    ON tyva_schema.as_addr_obj USING gin (setweight(to_tsvector('russian', tyva_schema.as_addr_obj.name), 'A'),
-                                          setweight(to_tsvector('russian', tyva_schema.as_addr_obj.typename), 'B'));
-
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
-CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_idx ON tyva_schema.as_addr_obj USING gin(name gin_trgm_ops);
-
-CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_and_typename_idx ON tyva_schema.as_addr_obj USING gin(name gin_trgm_ops, typename gin_trgm_ops);
-
--- CREATE TABLE IF NOT EXISTS tyva_schema.words AS SELECT word FROM ts_stat('SELECT to_tsvector(''simple'', aao.name) FROM tyva_schema.as_addr_obj aao');
---
--- CREATE INDEX IF NOT EXISTS words_idx ON tyva_schema.words USING gin (word gin_trgm_ops);
