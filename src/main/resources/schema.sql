@@ -173,3 +173,12 @@ CREATE TABLE IF NOT EXISTS tyva_schema.as_houses
     ADDTYPE2   INTEGER                                                                                     -- Дополнительный тип дома 2
 );
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_idx ON tyva_schema.as_addr_obj USING gin(name gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_and_typename_idx ON tyva_schema.as_addr_obj USING gin(name gin_trgm_ops, typename gin_trgm_ops);
+
+-- CREATE TABLE IF NOT EXISTS tyva_schema.words AS SELECT word FROM ts_stat('SELECT to_tsvector(''simple'', aao.name) FROM tyva_schema.as_addr_obj aao');
+--
+-- CREATE INDEX IF NOT EXISTS words_idx ON tyva_schema.words USING gin (word gin_trgm_ops);
