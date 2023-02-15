@@ -17,7 +17,7 @@
         </form>
     </fieldset>
     <div class="search_result" th:each="address : ${pgTrgmAddressList}">
-        <span th:text="${address.objectType} + '. ' + ${address.objectName}"></span>
+        <span th:text="${address.objectType} + ' ' + ${address.objectName}"></span>
     </div>
 </div>
 </body>

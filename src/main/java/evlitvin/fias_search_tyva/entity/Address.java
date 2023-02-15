@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class Address {
 
+    private String fullAddress;
     private String objectType;
     private String objectName;
     private Long objectId;

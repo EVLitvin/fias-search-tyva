@@ -12,6 +12,7 @@ public class AddressMapper implements RowMapper<Address> {
     @Override
     public Address mapRow(ResultSet rs, int rowNum) throws SQLException {
         Address address = new Address();
+        address.setFullAddress(rs.getString("fullAddress"));
         address.setObjectType(rs.getString("objectType"));
         address.setObjectName(rs.getString("objectName"));
         address.setObjectId(rs.getLong("objectId"));

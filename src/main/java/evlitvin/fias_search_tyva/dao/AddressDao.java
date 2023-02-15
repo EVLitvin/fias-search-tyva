@@ -8,7 +8,10 @@ import java.util.List;
 @Repository
 public interface AddressDao {
 
-    String sqlQueryUsePgTrgm = "SELECT aao.typename    AS objectType,\n" +
+//    String sqlQueryUsePgTrgm =
+
+    String sqlQueryUsePgTrgm = "SELECT aao.typename || ' ' || aao.name AS fullAddress," +
+            "       aao.typename    AS objectType,\n" +
             "       aao.name        AS objectName,\n" +
             "       aao.objectid    AS objectID,\n" +
             "       aao.objectguid  AS objectGUID,\n" +
