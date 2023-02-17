@@ -1,71 +1,117 @@
+with level1 as (
+    select aao.typename || ' ' || aao.name as address
+    from tyva_schema.as_addr_obj aao
+    where aao.objectid = 206101),
+     level2 (name) as (
+         select aao.typename || ' ' || aao.name as address
+         from tyva_schema.as_addr_obj aao
+            inner join tyva_schema.as_mun_hierarchy amh on aao.objectid = amh.objectid
+                where aao.isactive = 1) --and amh.objectid is not null)
+select *
+from level1, level2
+where level2.name ilike '%' || ? || '%';
+
+
+
+
+with recursive from_child_to_parent_tree as (
+	select objectid, parentobjid, path
+	from tyva_schema.as_mun_hierarchy
+		where parentobjid = 210289 -- 206101(Тыва Респ).95235187(Чаа-Хольский м.р-н).95235188(Шанчы с.п.).211174(Шанчы с).210289(Тулуш Шактаржап ул).37234514 (дом 3)
+	union all
+	select amh.objectid, amh.parentobjid, amh.path
+	from tyva_schema.as_mun_hierarchy amh, from_child_to_parent_tree fctpt
+		where amh.objectid = fctpt.parentobjid
+)
+select * from
+from_child_to_parent_tree;
+
+
+/*
+with recursive temp1(objectid, parentobjid, path) as (
+	select objectid, parentobjid, array[objectid] -- as path
+	from tyva_schema.as_mun_hierarchy
+		where objectid = 210289 -- {210289,211174,95235188,95235187,206101}
+								-- {210289,211174,95235188,95235187}
+								-- {210289,211174,95235188}
+								-- {210289,211174}
+								-- {210289}
+	union -- all
+	select amh2.objectid, amh2.parentobjid, temp1.path || amh2.objectid -- cast(temp1.path || ' -> ' || amh.objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy amh2
+		inner join temp1 on (temp1.parentobjid = amh2.objectid)
+)
+select path[1], path[2], path[3], path[4], path[5]
+from temp1
+order by temp1.path desc;
+*/
+
+/*
+with recursive temp1(objectid, parentobjid, path) as (
+	select objectid, parentobjid, array[objectid] -- as path
+	from tyva_schema.as_mun_hierarchy
+		where objectid = 210289 -- {210289,211174,95235188,95235187,206101}
+								-- {210289,211174,95235188,95235187}
+								-- {210289,211174,95235188}
+								-- {210289,211174}
+								-- {210289}
+	union -- all
+	select amh2.objectid, amh2.parentobjid, temp1.path || amh2.objectid -- cast(temp1.path || ' -> ' || amh.objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy amh2
+		inner join temp1 on (temp1.parentobjid = amh2.objectid)
+)
+select path
+from temp1
+order by path desc;
+*/
+
+/*
+with recursive path_from_children_to_parent(objectid, parentobjid, path) as (
+	select amh_mun.objectid, amh_mun.parentobjid, cast(amh_mun.objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy amh_mun, tyva_schema.as_addr_obj aao_addr
+		-- left join tyva_schema.as_addr_obj
+			where amh_mun.objectid = aao_addr.objectid
+				and aao_addr.name ilike 'радужная'
+				-- and amh_mun.objectid = 210289
+	union -- all
+	select amh.objectid, amh.parentobjid, cast(path_from_children_to_parent.path || ' -> ' || amh.objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy amh
+		inner join path_from_children_to_parent on (path_from_children_to_parent.parentobjid = amh.objectid)
+)
+select *
+from path_from_children_to_parent
+order by parentobjid desc;
+*/
+
+/*
+with recursive temp1(objectid, parentobjid, path) as (
+	select objectid, parentobjid, cast(objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy
+		where objectid = 210289
+	union -- all
+	select amh.objectid, amh.parentobjid, cast(temp1.path || ' -> ' || amh.objectid as varchar(150)) as path
+	from tyva_schema.as_mun_hierarchy amh
+		inner join temp1 on (temp1.parentobjid = amh.objectid)
+)
+select *
+from temp1;
+*/
+
+
+WITH RECURSIVE child_to_parents AS (
+  SELECT aao.* FROM tyva_schema.as_addr_obj aao --addrobj
+      WHERE aao.objectid = 95235204
+  UNION ALL
+  SELECT addrobj.* FROM addrobj, child_to_parents
+        AND addrobj.currstatus = 0
+)
+SELECT * FROM child_to_parents ORDER BY aolevel;
+select *
+from search tree;
+
 -- можно ли совместить pg_trgm и to_tsquery(?) или websearch_to_tsquery(?) или plainto_tsquery(?) или phraseto_tsquery(?)
 -- как добавить дом
 -- как добавить objectType и objectName для каждого кто в path иерархии
 -- как сделать динамичский выпадающий список при наборе
 
--- поиск aao.name ILIKE '%' || ? || '%'
-SELECT aao.typename    AS objectType,
-       aao.name        AS objectName,
-       aao.objectid    AS objectID,
-       aao.objectguid  AS objectGUID,
-       amh.parentobjid AS objectParent,
-       aao.isactive    AS objectActiveStatus,
-       aao.isactual    AS objectActualStatus,
-       aao.level       AS objectLevel,
-       amh.path        AS pathToObject
-FROM tyva_schema.as_addr_obj aao
-         FULL JOIN tyva_schema.as_mun_hierarchy amh ON aao.objectid = amh.objectid
-WHERE aao.name ILIKE '%' || ? || '%'
-  AND (aao.isactive = 1 AND aao.isactual = 1)
-ORDER BY aao.level;
 
-
--- поиск aao.name @@ websearch_to_tsquery(?)
-SELECT aao.typename    AS objectType,
-       aao.name        AS objectName,
-       aao.objectid    AS objectID,
-       aao.objectguid  AS objectGUID,
-       amh.parentobjid AS objectParent,
-       aao.isactive    AS objectActiveStatus,
-       aao.isactual    AS objectActualStatus,
-       aao.level       AS objectLevel,
-       amh.path        AS pathToObject
-FROM tyva_schema.as_addr_obj aao
-         FULL JOIN tyva_schema.as_mun_hierarchy amh ON aao.objectid = amh.objectid
-WHERE aao.name @@ websearch_to_tsquery(?)
-  AND (aao.isactive = 1 AND aao.isactual = 1)
-ORDER BY aao.level;
-
-
-select aao.typename    AS objectType,
-       aao.name        AS objectName,
-       aao.objectid    AS objectID,
-       aao.objectguid  AS objectGUID,
-       amh.parentobjid AS objectParent,
-       aao.isactive    AS objectActiveStatus,
-       aao.isactual    AS objectActualStatus,
-       aao.level       AS objectLevel,
-       amh.path        AS pathToObject
-from tyva_schema.as_addr_obj aao
-         inner join tyva_schema.as_mun_hierarchy amh on aao.objectid = amh.objectid
-where aao.objectid = 206101
-   or (aao.objectid = 95235322 and aao.isactual = 1 and aao.isactive = 1)
-   or (aao.objectid = 95235329 and aao.isactual = 1 and aao.isactive = 1)
-   or aao.objectid = 209801
-   or aao.objectid = 210093
-order by aao.level;
-
-
--- решение через рекурсию
-
-WITH RECURSIVE child_to_parents AS (
-    SELECT DISTINCT amh.*
-        FROM tyva_schema.as_mun_hierarchy AS amh
-        INNER JOIN tyva_schema.as_addr_obj aao ON aao.objectid = amh.objectid
-                WHERE aao.name ILIKE '%' || ? || '%'
-                  AND amh.isactive = 1
-        UNION ALL
-        SELECT amh.*
-            FROM tyva_schema.as_mun_hierarchy AS amh, child_to_parents AS c
-                WHERE amh.objectid = c.parentobjid
-) SELECT * FROM child_to_parents ORDER BY path DESC;
