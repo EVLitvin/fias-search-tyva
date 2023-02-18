@@ -23,7 +23,6 @@ public interface AddressDao {
             "             INNER JOIN tyva_schema.as_mun_hierarchy amh2 ON aao2.objectid = amh2.objectid\n" +
             "             INNER JOIN full_address ON full_address.parentobjid = amh2.objectid\n" +
             "    -- where aao2.isactive = 1 and aao2.isactual = 1 and amh2.isactive = 1\n" +
-            ")\n" +
             "SELECT DISTINCT address, typename AS objectType, name AS objectName, objectid AS objectId,\n" +
             "                objectguid AS objectGUID, parentobjid AS objectParent, isactive AS objectActiveStatus,\n" +
             "                isactual AS objectActualStatus, level AS objectLevel, path AS pathToObject\n" +
