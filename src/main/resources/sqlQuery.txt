@@ -1,14 +1,30 @@
+with recursive full_address(address, objectid, parentobjid, name) as (
+    select aao1.typename || ' ' || aao1.name as address, aao1.objectid, amh1.parentobjid, aao1.name
+    from tyva_schema.as_addr_obj aao1
+             inner join tyva_schema.as_mun_hierarchy amh1 on aao1.objectid = amh1.objectid
+    where aao1.name ilike '%' || ? || '%' -- and aao1.isactive = 1 and aao1.isactual = 1 and amh1.isactive = 1
+    union all
+    select full_address.address || ' ' || aao2.typename || ' ' || aao2.name as address, aao2.objectid, amh2.parentobjid, aao2.name
+    from tyva_schema.as_addr_obj aao2
+             inner join tyva_schema.as_mun_hierarchy amh2 on aao2.objectid = amh2.objectid
+             inner join full_address on full_address.parentobjid = amh2.objectid
+    -- where aao2.isactive = 1 and aao2.isactual = 1 and amh2.isactive = 1
+)
+select distinct address
+from full_address
+order by address desc;
+
 with recursive full_address(objectid, parentobjid, name, path) as (
 	select aao1.objectid, amh1.parentobjid, aao1.name, aao1.typename || ' ' || aao1.name as path
 	from tyva_schema.as_addr_obj aao1
 		inner join tyva_schema.as_mun_hierarchy amh1 on aao1.objectid = amh1.objectid
-			where aao1.name ilike 'радужная' and aao1.isactive = 1 and aao1.isactual = 1 and amh1.isactive = 1
+			-- where aao1.name ilike 'радужная' and aao1.isactive = 1 and aao1.isactual = 1 and amh1.isactive = 1
 	union all
 	select aao2.objectid, amh2.parentobjid, aao2.name, full_address.path || ' ' || aao2.typename || ' ' || aao2.name as path
 	from tyva_schema.as_addr_obj aao2
 		inner join tyva_schema.as_mun_hierarchy amh2 on aao2.objectid = amh2.objectid
 		inner join full_address on full_address.parentobjid = amh2.objectid
-			where aao2.isactive = 1 and aao2.isactual = 1 and amh2.isactive = 1
+			-- where aao2.isactive = 1 and aao2.isactual = 1 and amh2.isactive = 1
 )
 select distinct path
 from full_address
