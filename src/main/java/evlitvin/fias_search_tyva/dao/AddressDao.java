@@ -10,25 +10,25 @@ public interface AddressDao {
 
 //    String sqlQueryUsePgTrgm =
 
-    String sqlQueryUsePgTrgm = "with recursive full_address(address, typename, name, objectid, objectguid, parentobjid, isactive, isactual, level, path) as (\n" +
-            "    select aao1.typename || ' ' || aao1.name as address, aao1.typename, aao1.name,\n" +
-            "           aao1.objectid, aao1.objectguid, amh1.parentobjid, aao1.isactive, aao1.isactual, aao1.level, amh1.path\n" +
-            "    from tyva_schema.as_addr_obj aao1\n" +
-            "             inner join tyva_schema.as_mun_hierarchy amh1 on aao1.objectid = amh1.objectid\n" +
-            "    where aao1.name ilike '%' || ? || '%' -- and aao1.isactive = 1 and aao1.isactual = 1 and amh1.isactive = 1\n" +
-            "    union all\n" +
-            "    select full_address.address || ' ' || aao2.typename || ' ' || aao2.name as address, aao2.typename, aao2.name,\n" +
+    String sqlQueryUsePgTrgm = "WITH RECURSIVE full_address(address, typename, name, objectid, objectguid, parentobjid, isactive, isactual, level, path) AS (\n" +
+            "    SELECT aao1.typename || ' ' || aao1.name AS address, aao1.typename, aao1.name, aao1.objectid, aao1.objectguid,\n" +
+            "           amh1.parentobjid, aao1.isactive, aao1.isactual, aao1.level, amh1.path\n" +
+            "    FROM tyva_schema.as_addr_obj aao1\n" +
+            "             INNER JOIN tyva_schema.as_mun_hierarchy amh1 ON aao1.objectid = amh1.objectid\n" +
+            "    WHERE aao1.name ILIKE '%' || ? || '%' -- and aao1.isactive = 1 and aao1.isactual = 1 and amh1.isactive = 1\n" +
+            "    UNION ALL\n" +
+            "    SELECT full_address.address || ' ' || aao2.typename || ' ' || aao2.name AS address, aao2.typename, aao2.name,\n" +
             "           aao2.objectid, aao2.objectguid, amh2.parentobjid, aao2.isactive, aao2.isactual, aao2.level, amh2.path\n" +
-            "    from tyva_schema.as_addr_obj aao2\n" +
-            "             inner join tyva_schema.as_mun_hierarchy amh2 on aao2.objectid = amh2.objectid\n" +
-            "             inner join full_address on full_address.parentobjid = amh2.objectid\n" +
+            "    FROM tyva_schema.as_addr_obj aao2\n" +
+            "             INNER JOIN tyva_schema.as_mun_hierarchy amh2 ON aao2.objectid = amh2.objectid\n" +
+            "             INNER JOIN full_address ON full_address.parentobjid = amh2.objectid\n" +
             "    -- where aao2.isactive = 1 and aao2.isactual = 1 and amh2.isactive = 1\n" +
             ")\n" +
-            "select distinct address, typename AS objectType, name AS objectName, objectid AS objectId,\n" +
+            "SELECT DISTINCT address, typename AS objectType, name AS objectName, objectid AS objectId,\n" +
             "                objectguid AS objectGUID, parentobjid AS objectParent, isactive AS objectActiveStatus,\n" +
             "                isactual AS objectActualStatus, level AS objectLevel, path AS pathToObject\n" +
-            "from full_address\n" +
-            "order by address desc;\n";
+            "FROM full_address\n" +
+            "ORDER BY address DESC LIMIT 20;";
 
     List<Address> findAddressBySqlQueryUsePgTrgm(String addressDescription);
 
