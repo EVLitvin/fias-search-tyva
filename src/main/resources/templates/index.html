@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="en, ru">
+<html xlmns:th="http://www.thymeleaf.org" xmlns:xlmns="http://www.w3.org/1999/xhtml" lang="en, ru">
 <head>
     <meta charset="UTF-8">
     <title>Поиск в базе данных ФИАС</title>
 </head>
 <body>
-<div class="pg-trgm">
+<div th:class="pg-trgm">
     <fieldset>
         <legend>Поиск в базе данных</legend>
-        <form th:action="@{/search/pg-trgm}" method="get">
+        <form th:action="@{/search/pg-trgm}" th:method="get">
             <label for="pg-trgm-search">
-                <input type="text" id="pg-trgm-search" name="pgTrgmAddressDescription"
-                       th:value="${addressDescription}" placeholder="Введите адрес" size="50">
+                <input th:type="text" id="pg-trgm-search" th:name="pgTrgmAddressDescription"
+                       th:value="${addressDescription}" placeholder="Введите адрес" th:size="75">
             </label>
-            <button type="submit" class="search-btn">Найти</button>
+            <button th:type="submit" th:class="search-btn">Найти</button>
         </form>
     </fieldset>
-    <div class="search_result" th:each="address : ${pgTrgmAddressList}">
-<!--        <span th:text="${address.objectType} + ' ' + ${address.objectName}"></span>-->
+    <div th:class="search_result" th:each="address : ${pgTrgmAddressList}">
         <span th:text="${address.address}"></span>
     </div>
 </div>

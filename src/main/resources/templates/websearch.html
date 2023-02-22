@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xlmns:th="http://www.thymeleaf.org" xmlns:xlmns="http://www.w3.org/1999/xhtml" lang="en, ru">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <title>(websearch) Поиск в базе данных ФИАС</title>
 </head>
 <body>
-<div class="websearch-to-tsquery">
+<div th:class="websearch-to-tsquery">
     <fieldset>
         <legend>Поиск в базе данных ФИАС (websearch)</legend>
-        <form th:action="@{/websearch/websearch-to-tsquery}" method="get">
+        <form th:action="@{/websearch/websearch-to-tsquery}" th:method="get">
             <label for="websearch-to-tsquery">
-                <input type="text" id="websearch-to-tsquery" name="websearchToTsqueryAddressDescription"
-                       th:value="${addressDescription}"
-                       placeholder="Введите адрес" size="50">
+                <input th:type="text" id="websearch-to-tsquery" th:name="websearchToTsqueryAddressDescription"
+                       th:value="${addressDescription}" placeholder="Введите адрес" th:size="50">
             </label>
-            <button type="submit" class="search-btn">Найти</button>
+            <button th:type="submit" th:class="search-btn">Найти</button>
         </form>
     </fieldset>
-    <div class="search_result" th:each="address : ${websearchToTsqueryTrgmAddressList}">
-        <span th:text="${address.objectType} + '. ' + ${address.objectName}"></span>
+    <div th:class="search_result" th:each="address : ${websearchToTsqueryTrgmAddressList}">
+        <span th:text="${address.textsearch_index_column}"></span>
     </div>
 </div>
 </body>

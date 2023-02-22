@@ -30,4 +30,10 @@ public class AddressService implements AddressDao {
         return jdbcTemplate.query(sqlQueryUseWebsearchToTsquery, addressMapper, addressDescription);
     }
 
+    @Override
+    public List<Address> findSelect2(String filter) {
+        return jdbcTemplate.query(sqlSelect2, addressMapper, filter);
+    }
+
+
 }
