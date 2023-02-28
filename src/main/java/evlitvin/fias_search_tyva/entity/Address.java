@@ -9,8 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Address {
 
-    private Long objectId;
-    private String address;
-    private String textsearch_index_column;
+    private Long id;
+    private String text;
 
 }

@@ -178,6 +178,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ALTER TABLE IF EXISTS tyva_schema.as_addr_obj
     ADD COLUMN IF NOT EXISTS address text GENERATED ALWAYS AS (as_addr_obj.name || ' ' || as_addr_obj.typename) STORED;
 
+
 CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_and_typename_idx ON tyva_schema.as_addr_obj USING gin (name gin_trgm_ops, typename gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS tyva_schema_as_addr_obj_on_name_and_typename_idx ON tyva_schema.as_addr_obj USING gin (address gin_trgm_ops);
 
@@ -187,3 +188,15 @@ ALTER TABLE IF EXISTS tyva_schema.as_addr_obj
                 (setweight(to_tsvector('russian', coalesce(as_addr_obj.typename, '')), 'B'))) STORED;
 
 CREATE INDEX IF NOT EXISTS textsearch_idx ON tyva_schema.as_addr_obj USING gin (textsearch_index_column);
+
+ALTER TABLE IF EXISTS tyva_schema.as_adm_addr_str
+    ADD COLUMN IF NOT EXISTS textsearch_index_column tsvector GENERATED ALWAYS AS (
+                to_tsvector('russian', coalesce(as_adm_addr_str.text, ''))) STORED;
+
+CREATE INDEX IF NOT EXISTS textsearch_adm_idx ON tyva_schema.as_adm_addr_str USING gin (textsearch_index_column);
+
+ALTER TABLE IF EXISTS tyva_schema.as_mun_addr_str
+    ADD COLUMN IF NOT EXISTS textsearch_index_column tsvector GENERATED ALWAYS AS (
+        to_tsvector('russian', coalesce(as_mun_addr_str.text, ''))) STORED;
+
+CREATE INDEX IF NOT EXISTS textsearch_mun_idx ON tyva_schema.as_mun_addr_str USING gin (textsearch_index_column);

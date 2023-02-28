@@ -26,15 +26,9 @@ public class WebSearchController {
 
     @GetMapping(path = "/websearch/websearch-to-tsquery")
     public String showIndexPageWithWebsearchToTsquerySearchResult(String websearchToTsqueryAddressDescription, Model model) {
-        List<Address> websearchToTsqueryTrgmAddressList = addressService.findAddressBySqlQueryUseWebsearchToTsquery(websearchToTsqueryAddressDescription);
+        List<Address> websearchToTsqueryTrgmAddressList = addressService.findAdmHierarchyAddressUseWebsearch(websearchToTsqueryAddressDescription);
         model.addAttribute("websearchToTsqueryTrgmAddressList", websearchToTsqueryTrgmAddressList);
         return "websearch";
-    }
-
-    @ResponseBody
-    @GetMapping(path = "/api/websearch/{websearchToTsqueryAddressDescription}", produces = {"application/json", "text/xml"})
-    public List<Address> findAddressByWebsearchToTsqueryDescription(@PathVariable("websearchToTsqueryAddressDescription") String websearchToTsqueryAddressDescription) {
-        return addressService.findAddressBySqlQueryUseWebsearchToTsquery(websearchToTsqueryAddressDescription);
     }
 
 }

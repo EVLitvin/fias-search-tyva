@@ -24,15 +24,9 @@ public class IndexController {
 
     @GetMapping(path = "/search/pg-trgm")
     public String showIndexPageWithPgTrgmSearchResult(String pgTrgmAddressDescription, Model model) {
-        List<Address> pgTrgmAddressList = addressService.findAddressBySqlQueryUsePgTrgm(pgTrgmAddressDescription);
+        List<Address> pgTrgmAddressList = addressService.findAdmHierarchyAddress(pgTrgmAddressDescription);
         model.addAttribute("pgTrgmAddressList", pgTrgmAddressList);
         return "index";
-    }
-
-    @ResponseBody
-    @GetMapping(path = "/api/search/{pgTrgmAddressDescription}", produces = {"application/json", "text/xml"})
-    public List<Address> findAddressByPgTrgmDescription(@PathVariable("pgTrgmAddressDescription") String pgTrgmAddressDescription) {
-        return addressService.findAddressBySqlQueryUsePgTrgm(pgTrgmAddressDescription);
     }
 
 }

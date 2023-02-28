@@ -9,53 +9,15 @@ import java.util.List;
 @Repository
 public interface AddressDao {
 
-    List<Address> findAddressBySqlQueryUsePgTrgm(String addressDescription);
+    List<Address> findAdmHierarchyAddress(String sqlQueryUsePgTrgm);
 
-    String sqlQueryUsePgTrgm = "WITH RECURSIVE full_address(objectid, address, textsearch_index_column, parentobjid) AS (\n" +
-            "SELECT aao1.objectid, aao1.address, aao1.textsearch_index_column, amh1.parentobjid\n" +
-            "FROM tyva_schema.as_addr_obj aao1\n" +
-            "   INNER JOIN tyva_schema.as_mun_hierarchy amh1 ON aao1.objectid = amh1.objectid\n" +
-            "   UNION ALL\n" +
-            "SELECT aao2.objectid, full_address.address || ' ' || aao2.address, aao2.textsearch_index_column, amh2.parentobjid\n" +
-            "FROM tyva_schema.as_addr_obj aao2\n" +
-            "INNER JOIN tyva_schema.as_mun_hierarchy amh2 ON aao2.objectid = amh2.objectid\n" +
-            "             INNER JOIN full_address ON full_address.parentobjid = amh2.objectid\n" +
-            "SELECT DISTINCT objectid, address, textsearch_index_column, parentobjid\n" +
-            "FROM full_address\n" +
-            "WHERE address ILIKE '%' || ? || '%'\n" +
-            "ORDER BY address DESC LIMIT 100;";
+    String sqlQueryUsePgTrgm = "select id, text from tyva_schema.as_adm_addr_str where text ilike '%' || ? || '%' order by text limit 20;";
 
-    List<Address> findAddressBySqlQueryUseWebsearchToTsquery(String addressDescription);
+    List<Address> findAdmHierarchyAddressUseWebsearch(String sqlQueryUseWebsearchToTsquery);
 
-    String sqlQueryUseWebsearchToTsquery = "WITH RECURSIVE full_address(objectid, address, textsearch_index_column, parentobjid) AS (\n" +
-            "SELECT aao1.objectid, aao1.address, aao1.textsearch_index_column, amh1.parentobjid\n" +
-            "FROM tyva_schema.as_addr_obj aao1\n" +
-            "    INNER JOIN tyva_schema.as_mun_hierarchy amh1 ON aao1.objectid = amh1.objectid\n" +
-            "        UNION ALL\n" +
-            "        SELECT aao2.objectid, aao2.address, full_address.textsearch_index_column || ' ' || aao2.textsearch_index_column, amh2.parentobjid\n" +
-            "        FROM tyva_schema.as_addr_obj aao2\n" +
-            "            INNER JOIN tyva_schema.as_mun_hierarchy amh2 ON aao2.objectid = amh2.objectid\n" +
-            "            INNER JOIN full_address ON full_address.parentobjid = amh2.objectid\n" +
-            ")\n" +
-            "SELECT DISTINCT objectid, address, textsearch_index_column, parentobjid\n" +
-            "FROM full_address\n" +
-            "WHERE textsearch_index_column @@ to_tsquery('russian', ?)\n" +
-            "ORDER BY textsearch_index_column DESC LIMIT 100;";
+    String sqlQueryUseWebsearchToTsquery = "select id, text from tyva_schema.as_adm_addr_str where textsearch_index_column @@ websearch_to_tsquery('russian', ?) order by text limit 20;";
 
     List<Address> findSelect2(String filter);
 
-    String sqlSelect2 = "WITH RECURSIVE full_address(objectid, address, textsearch_index_column, parentobjid) AS (\n" +
-            "    SELECT aao1.objectid, aao1.address, aao1.textsearch_index_column, amh1.parentobjid\n" +
-            "    FROM tyva_schema.as_addr_obj aao1\n" +
-            "             INNER JOIN tyva_schema.as_mun_hierarchy amh1 ON aao1.objectid = amh1.objectid\n" +
-            "    UNION ALL\n" +
-            "    SELECT aao2.objectid, full_address.address || ' ' || aao2.address, aao2.textsearch_index_column, amh2.parentobjid\n" +
-            "    FROM tyva_schema.as_addr_obj aao2\n" +
-            "             INNER JOIN tyva_schema.as_mun_hierarchy amh2 ON aao2.objectid = amh2.objectid\n" +
-            "             INNER JOIN full_address ON full_address.parentobjid = amh2.objectid\n" +
-            ")\n" +
-            "SELECT DISTINCT objectid, address, textsearch_index_column, parentobjid\n" +
-            "FROM full_address\n" +
-            "WHERE address ILIKE '%' || ? || '%'\n" +
-            "ORDER BY address DESC LIMIT 100;";
+    String sqlSelect2 = "select id, text from tyva_schema.as_adm_addr_str where textsearch_index_column @@ websearch_to_tsquery('russian', ?) order by text limit 20;";
 }

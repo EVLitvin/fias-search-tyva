@@ -1,5 +1,15 @@
-
--- написать функцию чтобы убрать запросы из AddressDAO
+with recursive cte as (
+    select concat(aao1.typename, ' ', aao1.name) as address, aah1.objectid, aah1.parentobjid, aah1.path
+    from tyva_schema.as_adm_hierarchy aah1
+        inner join tyva_schema.as_addr_obj aao1 on aah1.objectid = aao1.objectid
+    -- where aah1.parentobjid = 0 and aah1.isactive = 1
+    union all
+    select concat(cte.address, ' ', aao2.typename, ' ', aao2.name), aah2.objectid, aah2.parentobjid, aah2.path
+    from tyva_schema.as_adm_hierarchy aah2
+        inner join cte on cte.objectid = aah2.parentobjid
+        inner join tyva_schema.as_addr_obj aao2 on aao2.objectid = aah2.objectid)
+select address, path from cte;
+--update tyva_schema.as_adm_hierarchy set (address) = (select path from cte where cte.parentobjid = as_adm_hierarchy.objectid);
 
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm; -- можно ли совместить pg_trgm и to_tsquery(?) или websearch_to_tsquery(?) или plainto_tsquery(?) или phraseto_tsquery(?)
@@ -50,3 +60,16 @@ SELECT DISTINCT objectid, address, textsearch_index_column, parentobjid
 FROM full_address
 WHERE textsearch_index_column @@ to_tsquery('russian', ?)
 ORDER BY textsearch_index_column DESC LIMIT 100;
+
+    // let data = [{id: 1, text: "Moscow"}, {id: 2, text: "Saint Petersburg"}, {id: 3, text: "Kazan"},
+    //     {id: 4, text: "Yekaterinburg"}, {id: 5, text: "Rostov"}, {id: 6, text: "Samara"}];
+    // $('#address').select2({
+    //     placeholder: "Начните вводить адрес",
+    //     data: data,
+    //     minimumInputLength: 3,
+    //     // multiple: true,
+    //     cache: false,
+    //     width: '1500px',
+    //     height: '300px',
+    //     dropdownCssClass: "bigdrop"
+    // });
